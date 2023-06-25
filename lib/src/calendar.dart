@@ -2,13 +2,11 @@ import 'dart:convert';
 
 import 'package:calendar_agenda/calendar_agenda.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'fullcalendar.dart';
-import 'typedata.dart';
 
 class CalendarAgenda extends StatefulWidget implements PreferredSizeWidget {
   final CalendarAgendaController? controller;
@@ -148,9 +146,7 @@ class CalendarAgendaState extends State<CalendarAgenda>
                     ? 78 / 200
                     : _scrollAlignment,
             scrollDirection: Axis.horizontal,
-            reverse: widget.selectedDayPosition == SelectedDayPosition.left
-                ? false
-                : true,
+            reverse: false,
             itemScrollController: _scrollController,
             physics: BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics(),
@@ -273,6 +269,8 @@ class CalendarAgendaState extends State<CalendarAgenda>
       );
     }
 
+    final directionality = Directionality.of(context);
+
     return Container(
       width: MediaQuery.of(context).size.width,
       height: widget.appbar ? 210 : 150.0,
@@ -289,7 +287,9 @@ class CalendarAgendaState extends State<CalendarAgenda>
           Positioned(
             top: widget.appbar ? 50.0 : 20.0,
             child: Padding(
-              padding: EdgeInsets.only(right: padding, left: 10),
+              padding: directionality == TextDirection.RTL
+                  ? EdgeInsets.only(right: 10, left: padding)
+                  : EdgeInsets.only(right: padding, left: 10),
               child: Container(
                 width: MediaQuery.of(context).size.width - padding,
                 child: Row(
