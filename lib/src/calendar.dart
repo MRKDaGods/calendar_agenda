@@ -146,7 +146,9 @@ class CalendarAgendaState extends State<CalendarAgenda>
                     ? 78 / 200
                     : _scrollAlignment,
             scrollDirection: Axis.horizontal,
-            reverse: false,
+            reverse: widget.selectedDayPosition == SelectedDayPosition.left
+                ? false
+                : true,
             itemScrollController: _scrollController,
             physics: BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics(),
