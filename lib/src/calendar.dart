@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:calendar_agenda/calendar_agenda.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'fullcalendar.dart';
@@ -88,7 +88,7 @@ class CalendarAgenda extends StatefulWidget implements PreferredSizeWidget {
 
 class CalendarAgendaState extends State<CalendarAgenda>
     with TickerProviderStateMixin {
-  ItemScrollController _scrollController = new ItemScrollController();
+  ItemScrollController _scrollController = ItemScrollController();
 
   late Color backgroundColor;
   late double padding;
@@ -132,7 +132,9 @@ class CalendarAgendaState extends State<CalendarAgenda>
         height: widget.appbar ? 125 : 100,
         padding: EdgeInsets.all(5),
         alignment: Alignment.bottomCenter,
-        child: ScrollablePositionedList.builder(
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: ScrollablePositionedList.builder(
             padding: _dates.length < 5
                 ? EdgeInsets.symmetric(
                     horizontal: MediaQuery.of(context).size.width *
@@ -146,9 +148,7 @@ class CalendarAgendaState extends State<CalendarAgenda>
                     ? 78 / 200
                     : _scrollAlignment,
             scrollDirection: Axis.horizontal,
-            reverse: widget.selectedDayPosition == SelectedDayPosition.left
-                ? false
-                : true,
+            reverse: widget.locale != 'en',
             itemScrollController: _scrollController,
             physics: BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics(),
@@ -267,11 +267,11 @@ class CalendarAgendaState extends State<CalendarAgenda>
                   ),
                 ),
               );
-            }),
+            },
+          ),
+        ),
       );
     }
-
-    final directionality = Directionality.of(context);
 
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -289,13 +289,10 @@ class CalendarAgendaState extends State<CalendarAgenda>
           Positioned(
             top: widget.appbar ? 50.0 : 20.0,
             child: Padding(
-              padding: directionality == TextDirection.RTL
-                  ? EdgeInsets.only(right: 10, left: padding)
-                  : EdgeInsets.only(right: padding, left: 10),
+              padding: EdgeInsets.symmetric(horizontal: padding),
               child: Container(
                 width: MediaQuery.of(context).size.width - padding,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     leading,
                     widget.fullCalendar!
@@ -332,7 +329,8 @@ class CalendarAgendaState extends State<CalendarAgenda>
               ),
             ),
           ),
-          Positioned(
+          Positioned.directional(
+            textDirection: TextDirection.ltr,
             bottom: 0.0,
             child: dayList(),
           ),
